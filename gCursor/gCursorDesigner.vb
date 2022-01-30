@@ -3,17 +3,19 @@ Imports System.ComponentModel.Design
 
 #Region "gCursorDesigner"
 
-Public Class gCursorDesigner
+Public Class GCursorDesigner
     Inherits ComponentDesigner
 
-    Private _gCursor As gCursor
+#Disable Warning IDE0052 ' Quitar miembros privados no leídos
+    Private _gCursor As GCursor
+#Enable Warning IDE0052 ' Quitar miembros privados no leídos
     Private _Lists As DesignerActionListCollection
 
     Public Overrides Sub Initialize(ByVal component As IComponent)
         MyBase.Initialize(component)
 
         ' Get control shortcut reference
-        _gCursor = CType(component, gCursor)
+        _gCursor = CType(component, GCursor)
     End Sub
 
 #Region "ActionLists"
@@ -21,8 +23,9 @@ Public Class gCursorDesigner
     Public Overrides ReadOnly Property ActionLists() As System.ComponentModel.Design.DesignerActionListCollection
         Get
             If _Lists Is Nothing Then
-                _Lists = New DesignerActionListCollection
-                _Lists.Add(New gCursorActionList(Me.Component))
+                _Lists = New DesignerActionListCollection From {
+                    New GCursorActionList(Me.Component)
+                }
             End If
             Return _Lists
         End Get
@@ -36,16 +39,16 @@ End Class
 
 #Region "gCursorActionList"
 
-Public Class gCursorActionList
+Public Class GCursorActionList
     Inherits DesignerActionList
 
-    Private _gCursorSelector As gCursor
+    Private ReadOnly _gCursorSelector As GCursor
 
     Public Sub New(ByVal component As IComponent)
         MyBase.New(component)
 
         ' Save a reference to the control we are designing.
-        _gCursorSelector = DirectCast(component, gCursor)
+        _gCursorSelector = DirectCast(component, GCursor)
 
         'Makes the Smart Tags open automatically 
         Me.AutoShow = True
@@ -57,76 +60,76 @@ Public Class gCursorActionList
 
     Public Sub Edit()
         'Create a new Corners Dialog and update the controls on the form
-        Dim dlg As gCursorUIEditor = New gCursorUIEditor()
+        Dim dlg As New gCursorUIEditor()
 
         Try
             ' Prepare the editing dialog.
             With dlg
-                .TextType = _gCursorSelector.gType
-                .HotSpot = _gCursorSelector.gHotSpot
-                CType(.GroupBoxHotSpot.Controls([Enum].GetName(GetType(ContentAlignment), .HotSpot)), _
+                .TextType = _gCursorSelector.GType
+                .HotSpot = _gCursorSelector.GHotSpot
+                CType(.GroupBoxHotSpot.Controls([Enum].GetName(GetType(ContentAlignment), .HotSpot)),
                     RadioButton).Checked = True
 
-                If _gCursorSelector.gText = "" Then
+                If _gCursorSelector.GText = "" Then
                     .txbText.Text = "Example Text" & vbCrLf & "Second Line" & vbCrLf & "Third Line"
                 Else
-                    .txbText.Text = _gCursorSelector.gText
+                    .txbText.Text = _gCursorSelector.GText
                 End If
-                .TextFont = _gCursorSelector.gFont
-                CType(.GroupBoxType.Controls("rbut" & [Enum].GetName(GetType(gCursor.eType), .TextType)), _
+                .TextFont = _gCursorSelector.GFont
+                CType(.GroupBoxType.Controls("rbut" & [Enum].GetName(GetType(GCursor.EType), .TextType)),
                     RadioButton).Checked = True
-                .TextColor = _gCursorSelector.gTextColor
-                .tbarTextTransp.Value = _gCursorSelector.gTTransp
+                .TextColor = _gCursorSelector.GTextColor
+                .tbarTextTransp.Value = _gCursorSelector.GTTransp
                 .txbTextTransp.Text = .tbarTextTransp.Value.ToString
-                .tbarTextBoxTransp.Value = _gCursorSelector.gTBTransp
+                .tbarTextBoxTransp.Value = _gCursorSelector.GTBTransp
                 .txbTextBoxTransp.Text = .tbarTextBoxTransp.Value.ToString
-                .TextAlign = _gCursorSelector.gTextAlignment
-                CType(.GroupBoxTextAlign.Controls("Align" & [Enum].GetName(GetType(ContentAlignment), .TextAlign)), _
+                .TextAlign = _gCursorSelector.GTextAlignment
+                CType(.GroupBoxTextAlign.Controls("Align" & [Enum].GetName(GetType(ContentAlignment), .TextAlign)),
                     RadioButton).Checked = True
-                .TextAutoFit = _gCursorSelector.gTextAutoFit
-                CType(.GroupBoxAutoFit.Controls("rbut" & [Enum].GetName(GetType(gCursor.eTextAutoFit), _
+                .TextAutoFit = _gCursorSelector.GTextAutoFit
+                CType(.GroupBoxAutoFit.Controls("rbut" & [Enum].GetName(GetType(GCursor.ETextAutoFit),
                     .TextAutoFit)), RadioButton).Checked = True
-                .gCursor1.gTextBox = _gCursorSelector.gTextBox
-                .TextBoxColor = _gCursorSelector.gTextBoxColor
-                .TextBorderColor = _gCursorSelector.gTextBorderColor
-                .TextColor = _gCursorSelector.gTextColor
-                .TextFill = _gCursorSelector.gTextFade
-                CType(.GroupBoxFadeStyle.Controls([Enum].GetName(GetType(gCursor.eTextFade), .TextFill)), _
+                .gCursor1.GTextBox = _gCursorSelector.GTextBox
+                .TextBoxColor = _gCursorSelector.GTextBoxColor
+                .TextBorderColor = _gCursorSelector.GTextBorderColor
+                .TextColor = _gCursorSelector.GTextColor
+                .TextFill = _gCursorSelector.GTextFade
+                CType(.GroupBoxFadeStyle.Controls([Enum].GetName(GetType(GCursor.ETextFade), .TextFill)),
                     RadioButton).Checked = True
 
-                .chkShowTextShadow.Checked = _gCursorSelector.gTextShadow
-                .TextShadowColor = _gCursorSelector.gTextShadowColor
-                .tbarBlur.Value = CInt(_gCursorSelector.gTextShadower.Blur / 0.1)
-                .tbarOffset.Value = CInt(_gCursorSelector.gTextShadower.Offset.X / 0.1)
-                .tbarShadowTransp.Value = CInt(_gCursorSelector.gTextShadower.ShadowTransp)
+                .chkShowTextShadow.Checked = _gCursorSelector.GTextShadow
+                .TextShadowColor = _gCursorSelector.GTextShadowColor
+                .tbarBlur.Value = CInt(_gCursorSelector.GTextShadower.Blur / 0.1)
+                .tbarOffset.Value = CInt(_gCursorSelector.GTextShadower.Offset.X / 0.1)
+                .tbarShadowTransp.Value = CInt(_gCursorSelector.GTextShadower.ShadowTransp)
                 .txbOffset.Text = CStr(.tbarOffset.Value * 0.1)
                 .txbShadowTransp.Text = CStr(.tbarShadowTransp.Value)
                 .txbBlur.Text = CStr(.tbarBlur.Value * 0.1)
 
 
-                .tbarImageTransp.Value = _gCursorSelector.gITransp
+                .tbarImageTransp.Value = _gCursorSelector.GITransp
                 .txbImageTransp.Text = .tbarImageTransp.Value.ToString
-                .tbarImageBoxTransp.Value = _gCursorSelector.gIBTransp
+                .tbarImageBoxTransp.Value = _gCursorSelector.GIBTransp
                 .txbImageBoxTransp.Text = .tbarImageBoxTransp.Value.ToString
-                .gCursor1.gImageBox = _gCursorSelector.gImageBox
-                .ImageBoxColor = _gCursorSelector.gImageBoxColor
-                .ImageBorderColor = _gCursorSelector.gImageBorderColor
+                .gCursor1.GImageBox = _gCursorSelector.GImageBox
+                .ImageBoxColor = _gCursorSelector.GImageBoxColor
+                .ImageBorderColor = _gCursorSelector.GImageBorderColor
 
-                .chkBitBlkBack.Checked = _gCursorSelector.gBlackBitBack
-                .chkShowBoxShadows.Checked = _gCursorSelector.gBoxShadow
-                .chkShowImageBox.Checked = _gCursorSelector.gShowImageBox
-                .chkShowTextBox.Checked = _gCursorSelector.gShowTextBox
-                .chkMultiline.Checked = _gCursorSelector.gTextMultiline
+                .chkBitBlkBack.Checked = _gCursorSelector.GBlackBitBack
+                .chkShowBoxShadows.Checked = _gCursorSelector.GBoxShadow
+                .chkShowImageBox.Checked = _gCursorSelector.GShowImageBox
+                .chkShowTextBox.Checked = _gCursorSelector.GShowTextBox
+                .chkMultiline.Checked = _gCursorSelector.GTextMultiline
 
-                .tbarTextBoxWidth.Value = _gCursorSelector.gTextBox.Width
-                .tbarTextBoxHeight.Value = _gCursorSelector.gTextBox.Height
-                .tbarImageBoxWidth.Value = _gCursorSelector.gImageBox.Width
-                .tbarImageBoxHeight.Value = _gCursorSelector.gImageBox.Height
+                .tbarTextBoxWidth.Value = _gCursorSelector.GTextBox.Width
+                .tbarTextBoxHeight.Value = _gCursorSelector.GTextBox.Height
+                .tbarImageBoxWidth.Value = _gCursorSelector.GImageBox.Width
+                .tbarImageBoxHeight.Value = _gCursorSelector.GImageBox.Height
                 .txbTextBoxWidth.Text = CStr(.tbarTextBoxWidth.Value)
                 .txbTextBoxHeight.Text = CStr(.tbarTextBoxHeight.Value)
                 .txbImageBoxWidth.Text = CStr(.tbarImageBoxWidth.Value)
                 .txbImageBoxHeight.Text = CStr(.tbarImageBoxHeight.Value)
-                If Not IsNothing(_gCursorSelector.gImage) Then .picImage.Image = _gCursorSelector.gImage
+                If Not IsNothing(_gCursorSelector.GImage) Then .picImage.Image = _gCursorSelector.GImage
 
             End With
         Catch ex As Exception
@@ -136,47 +139,47 @@ Public Class gCursorActionList
 
         ' Update new gCursor properties if OK button was pressed
         If dlg.ShowDialog() = DialogResult.OK Then
-            Dim designerHost As IDesignerHost = CType(Me.Component.Site.GetService( _
+            Dim designerHost As IDesignerHost = CType(Me.Component.Site.GetService(
                 GetType(IDesignerHost)), IDesignerHost)
 
             If designerHost IsNot Nothing Then
                 Dim t As DesignerTransaction = designerHost.CreateTransaction()
                 With dlg.gCursor1
                     Try
-                        SetControlProperty("gType", .gType)
-                        SetControlProperty("gHotSpot", .gHotSpot)
-                        SetControlProperty("gText", .gText)
-                        SetControlProperty("gFont", .gFont)
-                        SetControlProperty("gTextColor", .gTextColor)
-                        SetControlProperty("gTTransp", .gTTransp)
-                        SetControlProperty("gTBTransp", .gTBTransp)
-                        SetControlProperty("gTextAlignment", .gTextAlignment)
-                        SetControlProperty("gTextAutoFit", .gTextAutoFit)
-                        SetControlProperty("gTextBox", .gTextBox)
-                        SetControlProperty("gTextBoxColor", .gTextBoxColor)
-                        SetControlProperty("gTextBorderColor", .gTextBorderColor)
-                        SetControlProperty("gTextColor", .gTextColor)
-                        SetControlProperty("gTextFade", .gTextFade)
-                        SetControlProperty("gTextShadow", .gTextShadow)
-                        SetControlProperty("gTextShadowColor", .gTextShadowColor)
-                        SetControlProperty("gTextShadower", .gTextShadower)
+                        SetControlProperty("gType", .GType)
+                        SetControlProperty("gHotSpot", .GHotSpot)
+                        SetControlProperty("gText", .GText)
+                        SetControlProperty("gFont", .GFont)
+                        SetControlProperty("gTextColor", .GTextColor)
+                        SetControlProperty("gTTransp", .GTTransp)
+                        SetControlProperty("gTBTransp", .GTBTransp)
+                        SetControlProperty("gTextAlignment", .GTextAlignment)
+                        SetControlProperty("gTextAutoFit", .GTextAutoFit)
+                        SetControlProperty("gTextBox", .GTextBox)
+                        SetControlProperty("gTextBoxColor", .GTextBoxColor)
+                        SetControlProperty("gTextBorderColor", .GTextBorderColor)
+                        SetControlProperty("gTextColor", .GTextColor)
+                        SetControlProperty("gTextFade", .GTextFade)
+                        SetControlProperty("gTextShadow", .GTextShadow)
+                        SetControlProperty("gTextShadowColor", .GTextShadowColor)
+                        SetControlProperty("gTextShadower", .GTextShadower)
 
-                        SetControlProperty("gITransp", .gITransp)
-                        SetControlProperty("gIBTransp", .gIBTransp)
-                        SetControlProperty("gImageBox", .gImageBox)
-                        SetControlProperty("gImageBoxColor", .gImageBoxColor)
-                        SetControlProperty("gImageBorderColor", .gImageBorderColor)
-                        SetControlProperty("gBlackBitBack", .gBlackBitBack)
+                        SetControlProperty("gITransp", .GITransp)
+                        SetControlProperty("gIBTransp", .GIBTransp)
+                        SetControlProperty("gImageBox", .GImageBox)
+                        SetControlProperty("gImageBoxColor", .GImageBoxColor)
+                        SetControlProperty("gImageBorderColor", .GImageBorderColor)
+                        SetControlProperty("gBlackBitBack", .GBlackBitBack)
 
-                        SetControlProperty("gBoxShadow", .gBoxShadow)
-                        SetControlProperty("gShowImageBox", .gShowImageBox)
-                        SetControlProperty("gShowTextBox", .gShowTextBox)
-                        SetControlProperty("gTextMultiline", .gTextMultiline)
+                        SetControlProperty("gBoxShadow", .GBoxShadow)
+                        SetControlProperty("gShowImageBox", .GShowImageBox)
+                        SetControlProperty("gShowTextBox", .GShowTextBox)
+                        SetControlProperty("gTextMultiline", .GTextMultiline)
 
-                        SetControlProperty("gTextBox", .gTextBox)
-                        SetControlProperty("gImageBox", .gImageBox)
+                        SetControlProperty("gTextBox", .GTextBox)
+                        SetControlProperty("gImageBox", .GImageBox)
 
-                        SetControlProperty("gImage", .gImage)
+                        SetControlProperty("gImage", .GImage)
 
                         t.Commit()
                     Catch
@@ -202,15 +205,15 @@ Public Class gCursorActionList
 
     ' Return the smart tag action items.
     Public Overrides Function GetSortedActionItems() As System.ComponentModel.Design.DesignerActionItemCollection
-        Dim items As New DesignerActionItemCollection()
-
-        items.Add(New DesignerActionMethodItem( _
-            Me, _
-            "Edit", _
-            "Edit Properties Dialog", _
-            "gCursor Appearance", _
-            "Edit gCursor's Properties", _
-            True))
+        Dim items As New DesignerActionItemCollection From {
+            New DesignerActionMethodItem(
+            Me,
+            "Edit",
+            "Edit Properties Dialog",
+            "gCursor Appearance",
+            "Edit gCursor's Properties",
+            True)
+        }
 
         Return items
     End Function

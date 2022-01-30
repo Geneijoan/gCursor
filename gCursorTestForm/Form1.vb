@@ -296,9 +296,9 @@ Public Class Form1
 
     Private Function DeleteText(ByVal rtb As System.Windows.Forms.RichTextBox, ByVal start As Integer, ByVal length As Integer) As Boolean
         Dim currentCaret As Integer = rtb.SelectionStart ' use to reset position
-        Dim success As Boolean = False ' the boolean to return
         rtb.Select(start, length) ' select the text
         rtb.SelectedText = String.Empty ' set it to nothing
+        Dim success As Boolean
         If rtb.SelectedText <> String.Empty Then ' if for any reason it could not be changed
             success = False
         Else
@@ -321,15 +321,15 @@ Public Class Form1
 #Region "PictureBox"
 
     Private Sub PictureBox1_MouseDown(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles PictureBox1.MouseDown
-        GCursorPicBox = New gCursor(CType(PictureBox1.Image.Clone, Bitmap), 120, 100, CInt(TextBox4.Text))
+        GCursorPicBox = New GCursor(CType(PictureBox1.Image.Clone, Bitmap), 120, 100, CInt(TextBox4.Text))
         With GCursorPicBox
-            .gHotSpot = HotSpot
-            .gBlackBitBack = CheckBox2.Checked
-            .gBoxShadow = CheckBox3.Checked
-            .gShowImageBox = CheckBox4.Checked
-            .gImageBorderColor = ImageBorderColor
-            .gImageBoxColor = ImageBoxColor
-            .gIBTransp = CInt(TextBox7.Text)
+            .GHotSpot = HotSpot
+            .GBlackBitBack = CheckBox2.Checked
+            .GBoxShadow = CheckBox3.Checked
+            .GShowImageBox = CheckBox4.Checked
+            .GImageBorderColor = ImageBorderColor
+            .GImageBoxColor = ImageBoxColor
+            .GIBTransp = CInt(TextBox7.Text)
             .MakeCursor()
         End With
         Dim da As New DataObject
@@ -524,10 +524,9 @@ Public Class Form1
 
     Private Sub RadioButton5_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) _
         Handles RadioButton5.CheckedChanged
-        Dim Currrbut As RadioButton = CType(sender, RadioButton)
         Try
             'TextType = CType([Enum].Parse(GetType(gCursor.eType), Currrbut.Text), gCursor.eType)
-            TextType = gCursor.eType.Text
+            TextType = GCursor.EType.Text
             UpdateBoxExample()
         Catch ex As Exception
 
@@ -537,10 +536,9 @@ Public Class Form1
 
     Private Sub RadioButton6_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) _
         Handles RadioButton6.CheckedChanged
-        Dim Currrbut As RadioButton = CType(sender, RadioButton)
         Try
             'TextType = CType([Enum].Parse(GetType(gCursor.eType), Currrbut.Text), gCursor.eType)
-            TextType = gCursor.eType.Picture
+            TextType = GCursor.EType.Picture
             UpdateBoxExample()
         Catch ex As Exception
 
@@ -551,10 +549,9 @@ Public Class Form1
 
     Private Sub RadioButton7_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) _
         Handles RadioButton7.CheckedChanged
-        Dim Currrbut As RadioButton = CType(sender, RadioButton)
         Try
             'TextType = CType([Enum].Parse(GetType(gCursor.eType), Currrbut.Text), gCursor.eType)
-            TextType = gCursor.eType.Both
+            TextType = GCursor.EType.Both
             UpdateBoxExample()
         Catch ex As Exception
 
@@ -564,10 +561,9 @@ Public Class Form1
 
     Private Sub RadioButton1_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) _
         Handles RadioButton1.CheckedChanged, RadioButton2.CheckedChanged, RadioButton3.CheckedChanged, RadioButton4.CheckedChanged
-        Dim Currrbut As RadioButton = CType(sender, RadioButton)
         Try
             'TextAutoFit = CType([Enum].Parse(GetType(gCursor.eTextAutoFit), Currrbut.Text), gCursor.eTextAutoFit)
-            TextAutoFit = gCursor.eTextAutoFit.None
+            TextAutoFit = GCursor.ETextAutoFit.None
             UpdateBoxExample()
         Catch ex As Exception
 
@@ -576,10 +572,9 @@ Public Class Form1
 
     Private Sub RadioButton2_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) _
         Handles RadioButton2.CheckedChanged
-        Dim Currrbut As RadioButton = CType(sender, RadioButton)
         Try
             'TextAutoFit = CType([Enum].Parse(GetType(gCursor.eTextAutoFit), Currrbut.Text), gCursor.eTextAutoFit)
-            TextAutoFit = gCursor.eTextAutoFit.All
+            TextAutoFit = GCursor.ETextAutoFit.All
             UpdateBoxExample()
         Catch ex As Exception
 
@@ -588,10 +583,9 @@ Public Class Form1
 
     Private Sub RadioButton3_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) _
         Handles RadioButton3.CheckedChanged
-        Dim Currrbut As RadioButton = CType(sender, RadioButton)
         Try
             'TextAutoFit = CType([Enum].Parse(GetType(gCursor.eTextAutoFit), Currrbut.Text), gCursor.eTextAutoFit)
-            TextAutoFit = gCursor.eTextAutoFit.Width
+            TextAutoFit = GCursor.ETextAutoFit.Width
             UpdateBoxExample()
         Catch ex As Exception
 
@@ -600,10 +594,9 @@ Public Class Form1
 
     Private Sub RadioButton4_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) _
         Handles RadioButton4.CheckedChanged
-        Dim Currrbut As RadioButton = CType(sender, RadioButton)
         Try
             'TextAutoFit = CType([Enum].Parse(GetType(gCursor.eTextAutoFit), Currrbut.Text), gCursor.eTextAutoFit)
-            TextAutoFit = gCursor.eTextAutoFit.Height
+            TextAutoFit = GCursor.ETextAutoFit.Height
             UpdateBoxExample()
         Catch ex As Exception
 
@@ -796,8 +789,8 @@ Public Class Form1
         End Try
     End Sub
 
-    Private Sub butTextColor_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) _
-        Handles butTextColor.Click, butTextBoxColor.Click, butTextBorder.Click, _
+    Private Sub ButTextColor_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) _
+        Handles butTextColor.Click, butTextBoxColor.Click, butTextBorder.Click,
         butImageBoxColor.Click, butImageBorderColor.Click, butTextShadowColor.Click
         Select Case CType(sender, Button).Name
             Case "butTextColor"
@@ -888,8 +881,8 @@ Public Class Form1
 #Region "UpdateBoxExample"
 
     Sub UpdateBoxExample()
-        Dim bm As Bitmap = New Bitmap(Panel2.Width, Panel2.Height, PixelFormat.Format32bppPArgb)
-        Dim cur As gCursor = New gCursor
+        Dim bm As New Bitmap(Panel2.Width, Panel2.Height, PixelFormat.Format32bppPArgb)
+        Dim cur As New GCursor
         With cur
 
             Select Case TextType
@@ -1039,23 +1032,23 @@ Public Class Form1
     Private Function FormScreenShot() As Bitmap
 
         Dim pt As Point
-        Using FormImage As Bitmap = New Bitmap(Me.Size.Width, Me.Size.Height)
+        Using FormImage As New Bitmap(Me.Size.Width, Me.Size.Height)
             Using g As Graphics = Graphics.FromImage(FormImage)
 
                 g.CopyFromScreen(Me.Location, New Point(0, 0), Me.Size)
 
                 If MouseButtons = Windows.Forms.MouseButtons.Left Then
                     'Get the Custom Cursor
-                    If GCursorLabel.gCursorImage IsNot Nothing Then
-                        pt = PointToClient(Point.Subtract(MousePosition, _
-                                           CType(GCursorLabel.gCursor.HotSpot, Size)))
-                        g.DrawImage(GCursorLabel.gCursorImage, pt.X + 4, pt.Y + 30)
+                    If GCursorLabel.GCursorImage IsNot Nothing Then
+                        pt = PointToClient(Point.Subtract(MousePosition,
+                                           CType(GCursorLabel.GCursor.HotSpot, Size)))
+                        g.DrawImage(GCursorLabel.GCursorImage, pt.X + 4, pt.Y + 30)
                     End If
                 Else
                     'Get the Normal Cursor
-                    pt = PointToClient(Point.Subtract(MousePosition, _
+                    pt = PointToClient(Point.Subtract(MousePosition,
                                        CType(Cursor.Current.HotSpot, Size)))
-                    Cursor.Current.Draw(g, New Rectangle(pt.X + 4, pt.Y + 30, _
+                    Cursor.Current.Draw(g, New Rectangle(pt.X + 4, pt.Y + 30,
                             Cursor.Current.Size.Width, Cursor.Current.Size.Height))
 
                 End If
@@ -1096,19 +1089,19 @@ Public Class Form1
     'This is to get a copy of just the gCursor Image
     Private Sub Button4_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button4.Click
         GCursorLabel.gEffect = gCursor.eEffect.Move
-        Using CursorImage As Bitmap = New Bitmap(GCursorLabel.gCursorImage.Size.Width, _
-            GCursorLabel.gCursorImage.Size.Height), _
+        Using CursorImage As New Bitmap(GCursorLabel.GCursorImage.Size.Width,
+            GCursorLabel.GCursorImage.Size.Height),
             g As Graphics = Graphics.FromImage(CursorImage)
 
             g.Clear(Color.White)
-            If GCursorLabel.gCursorImage IsNot Nothing Then g.DrawImage(GCursorLabel.gCursorImage, 0, 0)
+            If GCursorLabel.GCursorImage IsNot Nothing Then g.DrawImage(GCursorLabel.GCursorImage, 0, 0)
             Clipboard.SetImage(CursorImage)
         End Using
         ShowClipboard("Current Cursor Image on the Clipboard")
     End Sub
 
     Private Sub ShowClipboard(ByVal Text As String)
-        Using frm As Form = New Form
+        Using frm As New Form
             frm.Text = Text
             frm.BackColor = Color.White
             frm.BackgroundImageLayout = ImageLayout.Zoom

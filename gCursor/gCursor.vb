@@ -21,14 +21,14 @@ Imports System.ComponentModel
 
 #End Region 'Version 1.4
 
-<ToolboxItem(True), ToolboxBitmap(GetType(gCursor), "gCursor.gCursor.bmp")> _
-<Designer(GetType(gCursorDesigner))> _
-Public Class gCursor
+<ToolboxItem(True), ToolboxBitmap(GetType(gCursor), "gCursor.gCursor.bmp")>
+<Designer(GetType(gCursorDesigner))>
+Public Class GCursor
 
-    Private CurNo As Cursor = New Cursor(New System.IO.MemoryStream(My.Resources.No))
-    Private CurMove As Cursor = New Cursor(New System.IO.MemoryStream(My.Resources.Move))
-    Private CurCopy As Cursor = New Cursor(New System.IO.MemoryStream(My.Resources.Copy))
-    Private sf As New StringFormat
+    Private ReadOnly CurNo As New Cursor(New System.IO.MemoryStream(My.Resources.No))
+    Private ReadOnly CurMove As New Cursor(New System.IO.MemoryStream(My.Resources.Move))
+    Private ReadOnly CurCopy As New Cursor(New System.IO.MemoryStream(My.Resources.Copy))
+    Private ReadOnly sf As New StringFormat
 
 #Region "CreateIconIndirect"
 
@@ -40,25 +40,26 @@ Public Class gCursor
         Public hbmColor As IntPtr
     End Structure
 
-    <DllImport("user32.dll", EntryPoint:="CreateIconIndirect")> _
+    <DllImport("user32.dll", EntryPoint:="CreateIconIndirect")>
     Private Shared Function CreateIconIndirect(ByVal iconInfo As IntPtr) As IntPtr
     End Function
 
-    <DllImport("user32.dll", CharSet:=CharSet.Auto)> _
+    <DllImport("user32.dll", CharSet:=CharSet.Auto)>
     Public Shared Function DestroyIcon(ByVal handle As IntPtr) As Boolean
     End Function
 
-    <DllImport("gdi32.dll")> _
+    <DllImport("gdi32.dll")>
     Public Shared Function DeleteObject(ByVal hObject As IntPtr) As Boolean
     End Function
 
     Public Function CreateCursor(ByVal bmp As Bitmap) As Cursor
 
         'Setup the Cursors IconInfo
-        Dim tmp As New IconInfo
-        tmp.xHotspot = _gHotSpotPt.X
-        tmp.yHotspot = _gHotSpotPt.Y
-        tmp.fIcon = False
+        Dim tmp As New IconInfo With {
+            .xHotspot = _gHotSpotPt.X,
+            .yHotspot = _gHotSpotPt.Y,
+            .fIcon = False
+        }
         If _gBlackBitBack Then
             tmp.hbmMask = bmp.GetHbitmap(Color.FromArgb(0, 0, 0, 0))
             tmp.hbmColor = bmp.GetHbitmap(Color.FromArgb(0, 0, 0, 0))
@@ -95,54 +96,54 @@ Public Class gCursor
         MakeCursor()
     End Sub
 
-    Public Sub New(ByVal Image As Bitmap, ByVal width As Integer, ByVal height As Integer, _
+    Public Sub New(ByVal Image As Bitmap, ByVal width As Integer, ByVal height As Integer,
         Optional ByVal ImageTransparency As Integer = 0, Optional ByVal ImageBoxTransparency As Integer = 80)
         _gImage = Image
-        _gType = eType.Picture
+        _gType = EType.Picture
         _gImageBox.Height = height
         _gImageBox.Width = width
-        gITransp = ImageTransparency
-        gIBTransp = ImageBoxTransparency
+        GITransp = ImageTransparency
+        GIBTransp = ImageBoxTransparency
         MakeCursor()
     End Sub
 
     Public Sub New(ByVal Text As String, ByVal width As Integer, ByVal height As Integer, Optional ByVal TextTransparency As Integer = 0)
         _gText = Text
-        _gType = eType.Text
+        _gType = EType.Text
         _gTextBox.Height = height
         _gTextBox.Width = width
-        gTTransp = TextTransparency
+        GTTransp = TextTransparency
         MakeCursor()
     End Sub
 
     Public Sub New(ByVal Image As Bitmap, ByVal imgwidth As Integer, ByVal imgheight As Integer, ByVal Text As String, ByVal txtwidth As Integer, ByVal txtheight As Integer, Optional ByVal ImageTransparency As Integer = 0, Optional ByVal TextTransparency As Integer = 0)
         _gImage = Image
         _gText = Text
-        _gType = eType.Both
+        _gType = EType.Both
         _gImageBox.Height = imgheight
         _gImageBox.Width = imgwidth
         _gTextBox.Height = txtheight
         _gTextBox.Width = txtwidth
-        gITransp = ImageTransparency
-        gTTransp = TextTransparency
+        GITransp = ImageTransparency
+        GTTransp = TextTransparency
         MakeCursor()
     End Sub
 
     Public Sub New(ByVal lstItm As ListViewItem, ByVal txtwidth As Integer, ByVal txtheight As Integer, Optional ByVal ImageTransparency As Integer = 0, Optional ByVal ImageBoxTransparency As Integer = 80, Optional ByVal imgwidth As Integer = 50, Optional ByVal imgheight As Integer = 50, Optional ByVal TextTransparency As Integer = 0, Optional ByVal TextBoxTransparency As Integer = 80)
         If lstItm.ImageList IsNot Nothing Then
             _gImage = CType(lstItm.ImageList.Images(lstItm.ImageIndex), Bitmap)
-            _gType = eType.Both
+            _gType = EType.Both
             _gImageBox.Height = imgheight
             _gImageBox.Width = imgwidth
-            gITransp = ImageTransparency
-            gIBTransp = ImageBoxTransparency
+            GITransp = ImageTransparency
+            GIBTransp = ImageBoxTransparency
         Else
-            _gType = eType.Text
+            _gType = EType.Text
         End If
         _gTextBox.Height = txtheight
         _gTextBox.Width = txtwidth
-        gTTransp = TextTransparency
-        gTBTransp = TextBoxTransparency
+        GTTransp = TextTransparency
+        GTBTransp = TextBoxTransparency
         _gText = lstItm.Text
         MakeCursor()
     End Sub
@@ -150,18 +151,18 @@ Public Class gCursor
     Public Sub New(ByVal trvItm As TreeNode, ByVal txtwidth As Integer, ByVal txtheight As Integer, Optional ByVal ImageTransparency As Integer = 0, Optional ByVal ImageBoxTransparency As Integer = 80, Optional ByVal imgwidth As Integer = 50, Optional ByVal imgheight As Integer = 50, Optional ByVal TextTransparency As Integer = 100, Optional ByVal TextBoxTransparency As Integer = 100)
         If trvItm.TreeView.ImageList IsNot Nothing Then
             _gImage = CType(trvItm.TreeView.ImageList.Images(trvItm.SelectedImageIndex), Bitmap)
-            _gType = eType.Both
+            _gType = EType.Both
             _gImageBox.Height = imgheight
             _gImageBox.Width = imgwidth
-            gITransp = ImageTransparency
-            gIBTransp = ImageBoxTransparency
+            GITransp = ImageTransparency
+            GIBTransp = ImageBoxTransparency
         Else
-            _gType = eType.Text
+            _gType = EType.Text
         End If
         _gTextBox.Height = txtheight
         _gTextBox.Width = txtwidth
-        gTTransp = TextTransparency
-        gTBTransp = TextBoxTransparency
+        GTTransp = TextTransparency
+        GTBTransp = TextBoxTransparency
         _gText = trvItm.Text
         MakeCursor()
     End Sub
@@ -173,10 +174,10 @@ Public Class gCursor
 #Region "Cursor Props"
 
     Private _gCursor As Cursor = Cursors.Default
-    <Browsable(False)> _
-    <System.ComponentModel.DesignerSerializationVisibility( _
-    System.ComponentModel.DesignerSerializationVisibility.Hidden)> _
-    Public Property gCursor() As Cursor
+    <Browsable(False)>
+    <System.ComponentModel.DesignerSerializationVisibility(
+    System.ComponentModel.DesignerSerializationVisibility.Hidden)>
+    Public Property GCursor() As Cursor
         Get
             Return _gCursor
         End Get
@@ -187,8 +188,8 @@ Public Class gCursor
 
     Private _gCursorImage As Bitmap
     'The True Image of the Displayed Cursor
-    <Browsable(False)> _
-    Public Property gCursorImage() As Bitmap
+    <Browsable(False)>
+    Public Property GCursorImage() As Bitmap
         Get
             Return _gCursorImage
         End Get
@@ -197,19 +198,19 @@ Public Class gCursor
         End Set
     End Property
 
-    Enum eEffect
+    Enum EEffect
         No
         Move
         Copy
     End Enum
-    Private _gEffect As eEffect = eEffect.No
+    Private _gEffect As EEffect = EEffect.No
     'What Drag Effect to display
-    <Browsable(False)> _
-    Public Property gEffect() As eEffect
+    <Browsable(False)>
+    Public Property GEffect() As EEffect
         Get
             Return _gEffect
         End Get
-        Set(ByVal Value As eEffect)
+        Set(ByVal Value As EEffect)
             If _gEffect <> Value Then
                 _gEffect = Value
                 MakeCursor()
@@ -217,7 +218,7 @@ Public Class gCursor
         End Set
     End Property
 
-    Enum eScrolling
+    Enum EScrolling
         No
         ScrollUp
         ScrollDn
@@ -225,42 +226,42 @@ Public Class gCursor
         ScrollRight
     End Enum
 
-    Private _gScrolling As eScrolling = eScrolling.No
+    Private _gScrolling As EScrolling = EScrolling.No
     '
-    <Description("What Drag Effect to display")> _
-    <Category("Appearance gCursor")> _
-    Public Property gScrolling() As eScrolling
+    <Description("What Drag Effect to display")>
+    <Category("Appearance gCursor")>
+    Public Property GScrolling() As EScrolling
         Get
             Return _gScrolling
         End Get
-        Set(ByVal Value As eScrolling)
+        Set(ByVal Value As EScrolling)
             _gScrolling = Value
         End Set
     End Property
 
-    Enum eType
+    Enum EType
         Text
         Picture
         Both
     End Enum
-    Private _gType As eType = eType.Text
+    Private _gType As EType = EType.Text
     '
-    <Description("What kind of gCursor Text Only, Picture Only, or Both")> _
-    <Category("Appearance gCursor")> _
-    Public Property gType() As eType
+    <Description("What kind of gCursor Text Only, Picture Only, or Both")>
+    <Category("Appearance gCursor")>
+    Public Property GType() As EType
         Get
             Return _gType
         End Get
-        Set(ByVal Value As eType)
+        Set(ByVal Value As EType)
             _gType = Value
         End Set
     End Property
 
     Private _gBlackBitBack As Boolean = False
     '
-    <Description("The pesky Background ghost when using transparency >0 and <255. True gives a Black Tint and False gives a Blue Tint")> _
-    <Category("Appearance gCursor")> _
-    Public Property gBlackBitBack() As Boolean
+    <Description("The pesky Background ghost when using transparency >0 and <255. True gives a Black Tint and False gives a Blue Tint")>
+    <Category("Appearance gCursor")>
+    Public Property GBlackBitBack() As Boolean
         Get
             Return _gBlackBitBack
         End Get
@@ -271,9 +272,9 @@ Public Class gCursor
 
     Private _gBoxShadow As Boolean = True
     '
-    <Description("Show Shadow behind Boxes")> _
-    <Category("Appearance gCursor")> _
-    Public Property gBoxShadow() As Boolean
+    <Description("Show Shadow behind Boxes")>
+    <Category("Appearance gCursor")>
+    Public Property GBoxShadow() As Boolean
         Get
             Return _gBoxShadow
         End Get
@@ -282,12 +283,12 @@ Public Class gCursor
         End Set
     End Property
 
-    Private _gHotSpotPt As Point = New Point(0, 0)
+    Private _gHotSpotPt As New Point(0, 0)
     Private _gHotSpot As ContentAlignment = ContentAlignment.MiddleCenter
     '
-    <Description("HotSpot location on the gCursor")> _
-    <Category("Appearance gCursor")> _
-    Public Property gHotSpot() As ContentAlignment
+    <Description("HotSpot location on the gCursor")>
+    <Category("Appearance gCursor")>
+    Public Property GHotSpot() As ContentAlignment
         Get
             Return _gHotSpot
         End Get
@@ -302,9 +303,9 @@ Public Class gCursor
 
     Private _gImage As Bitmap = Nothing
     '
-    <Description("Picture to use in the gCursor")> _
-    <Category("Appearance gCursor Image")> _
-    Public Property gImage() As Bitmap
+    <Description("Picture to use in the gCursor")>
+    <Category("Appearance gCursor Image")>
+    Public Property GImage() As Bitmap
         Get
             Return _gImage
         End Get
@@ -313,11 +314,11 @@ Public Class gCursor
         End Set
     End Property
 
-    Private _gImageBox As Size = New Size(75, 56)
+    Private _gImageBox As New Size(75, 56)
     '
-    <Description("Size of the Box to display around the Picture")> _
-    <Category("Appearance gCursor Image")> _
-    Public Property gImageBox() As Size
+    <Description("Size of the Box to display around the Picture")>
+    <Category("Appearance gCursor Image")>
+    Public Property GImageBox() As Size
         Get
             Return _gImageBox
         End Get
@@ -328,9 +329,9 @@ Public Class gCursor
 
     Private _gShowImageBox As Boolean = False
     '
-    <Description("Show or Not Show the Box around the Picture")> _
-    <Category("Appearance gCursor Image")> _
-    Public Property gShowImageBox() As Boolean
+    <Description("Show or Not Show the Box around the Picture")>
+    <Category("Appearance gCursor Image")>
+    Public Property GShowImageBox() As Boolean
         Get
             Return _gShowImageBox
         End Get
@@ -341,9 +342,9 @@ Public Class gCursor
 
     Private _gImageBoxColor As Color = Color.White
     '
-    <Description("Background color for the Image Box")> _
-    <Category("Appearance gCursor Image")> _
-    Public Property gImageBoxColor() As Color
+    <Description("Background color for the Image Box")>
+    <Category("Appearance gCursor Image")>
+    Public Property GImageBoxColor() As Color
         Get
             Return _gImageBoxColor
         End Get
@@ -354,9 +355,9 @@ Public Class gCursor
 
     Private _gImageBorderColor As Color = Color.Black
     '
-    <Description("Color for the Border around the Image Box")> _
-    <Category("Appearance gCursor Image")> _
-    Public Property gImageBorderColor() As Color
+    <Description("Color for the Border around the Image Box")>
+    <Category("Appearance gCursor Image")>
+    Public Property GImageBorderColor() As Color
         Get
             Return _gImageBorderColor
         End Get
@@ -368,9 +369,9 @@ Public Class gCursor
     Private _gImageTransp As Integer = 255
     Private _gITransp As Integer = 0
     '
-    <Description("Transparency Percentage value for the Picture. Converts and puts value in _gImageTransp to 0-255 value")> _
-    <Category("Appearance gCursor Image")> _
-    Public Property gITransp() As Integer
+    <Description("Transparency Percentage value for the Picture. Converts and puts value in _gImageTransp to 0-255 value")>
+    <Category("Appearance gCursor Image")>
+    Public Property GITransp() As Integer
         Get
             Return _gITransp
         End Get
@@ -385,9 +386,9 @@ Public Class gCursor
     Private _gImageBoxTransp As Integer = 255
     Private _gIBTransp As Integer = 80
     '
-    <Description("Transparency Percentage value for the Picture Box. Converts and puts value in _gImageBoxTransp to 0-255 value")> _
-    <Category("Appearance gCursor Image")> _
-    Public Property gIBTransp() As Integer
+    <Description("Transparency Percentage value for the Picture Box. Converts and puts value in _gImageBoxTransp to 0-255 value")>
+    <Category("Appearance gCursor Image")>
+    Public Property GIBTransp() As Integer
         Get
             Return _gIBTransp
         End Get
@@ -402,12 +403,12 @@ Public Class gCursor
 #End Region 'Image
 
 #Region "Text"
-    Private _gTextBoxArea As Size = New Size(100, 30)
-    Private _gTextBox As Size = New Size(100, 30)
+    Private _gTextBoxArea As New Size(100, 30)
+    Private _gTextBox As New Size(100, 30)
     '
-    <Description("Size of box around Text")> _
-    <Category("Appearance gCursor Text")> _
-    Public Property gTextBox() As Size
+    <Description("Size of box around Text")>
+    <Category("Appearance gCursor Text")>
+    Public Property GTextBox() As Size
         Get
             Return _gTextBox
         End Get
@@ -419,9 +420,9 @@ Public Class gCursor
     Private _gTextTransp As Integer = 255
     Private _gTTransp As Integer = 0
     '
-    <Description("Transparency Percentage value for the Text. Converts and puts value in _gTextTransp to 0-255 value")> _
-    <Category("Appearance gCursor Text")> _
-    Public Property gTTransp() As Integer
+    <Description("Transparency Percentage value for the Text. Converts and puts value in _gTextTransp to 0-255 value")>
+    <Category("Appearance gCursor Text")>
+    Public Property GTTransp() As Integer
         Get
             Return _gTTransp
         End Get
@@ -436,9 +437,9 @@ Public Class gCursor
     Private _gTextBoxTransp As Integer = 255
     Private _gTBTransp As Integer = 80
     '
-    <Description("Transparency Percentage value for the Text Box. Converts and puts value in _gTextBoxTransp to 0-255 value")> _
-    <Category("Appearance gCursor Text")> _
-    Public Property gTBTransp() As Integer
+    <Description("Transparency Percentage value for the Text Box. Converts and puts value in _gTextBoxTransp to 0-255 value")>
+    <Category("Appearance gCursor Text")>
+    Public Property GTBTransp() As Integer
         Get
             Return _gTBTransp
         End Get
@@ -452,9 +453,9 @@ Public Class gCursor
 
     Private _gShowTextBox As Boolean = False
     '
-    <Description("Show or Not Show the Box around the Text")> _
-    <Category("Appearance gCursor Text")> _
-    Public Property gShowTextBox() As Boolean
+    <Description("Show or Not Show the Box around the Text")>
+    <Category("Appearance gCursor Text")>
+    Public Property GShowTextBox() As Boolean
         Get
             Return _gShowTextBox
         End Get
@@ -465,9 +466,9 @@ Public Class gCursor
 
     Private _gTextMultiline As Boolean = False
     '
-    <Description("Allow Multiline Text")> _
-    <Category("Appearance gCursor Text")> _
-    Public Property gTextMultiline() As Boolean
+    <Description("Allow Multiline Text")>
+    <Category("Appearance gCursor Text")>
+    Public Property GTextMultiline() As Boolean
         Get
             Return _gTextMultiline
         End Get
@@ -476,31 +477,31 @@ Public Class gCursor
         End Set
     End Property
 
-    Enum eTextAutoFit
+    Enum ETextAutoFit
         None
         Width
         Height
         All
     End Enum
-    Private _gTextAutoFit As eTextAutoFit = eTextAutoFit.None
+    Private _gTextAutoFit As ETextAutoFit = ETextAutoFit.None
     '
-    <Description("Auto Fit the text to the chosen parameter")> _
-    <Category("Appearance gCursor Text")> _
-    Public Property gTextAutoFit() As eTextAutoFit
+    <Description("Auto Fit the text to the chosen parameter")>
+    <Category("Appearance gCursor Text")>
+    Public Property GTextAutoFit() As ETextAutoFit
         Get
             Return _gTextAutoFit
         End Get
-        Set(ByVal Value As eTextAutoFit)
+        Set(ByVal Value As ETextAutoFit)
             _gTextAutoFit = Value
         End Set
     End Property
 
     Private _gText As String = ""
     '
-    <Description("Text String Value")> _
-    <Category("Appearance gCursor Text")> _
-    <Editor(GetType(Design.MultilineStringEditor), GetType(Drawing.Design.UITypeEditor))> _
-    Public Property gText() As String
+    <Description("Text String Value")>
+    <Category("Appearance gCursor Text")>
+    <Editor(GetType(Design.MultilineStringEditor), GetType(Drawing.Design.UITypeEditor))>
+    Public Property GText() As String
         Get
             Return _gText
         End Get
@@ -511,9 +512,9 @@ Public Class gCursor
 
     Private _gTextColor As Color = Color.Blue
     '
-    <Description("Color of the Text")> _
-    <Category("Appearance gCursor Text")> _
-    Public Property gTextColor() As Color
+    <Description("Color of the Text")>
+    <Category("Appearance gCursor Text")>
+    Public Property GTextColor() As Color
         Get
             Return _gTextColor
         End Get
@@ -524,9 +525,9 @@ Public Class gCursor
 
     Private _gTextShadowColor As Color = Color.Black
     '
-    <Description("Color of the Text")> _
-    <Category("Appearance gCursor Text")> _
-    Public Property gTextShadowColor() As Color
+    <Description("Color of the Text")>
+    <Category("Appearance gCursor Text")>
+    Public Property GTextShadowColor() As Color
         Get
             Return _gTextShadowColor
         End Get
@@ -537,10 +538,10 @@ Public Class gCursor
 
     Private _gTextShadower As New TextShadower
     '
-    <Description("Show or Not Show the Text Shadow")> _
-    <Category("Appearance gCursor Text")> _
-    <Browsable(False)> _
-    Public Property gTextShadower() As TextShadower
+    <Description("Show or Not Show the Text Shadow")>
+    <Category("Appearance gCursor Text")>
+    <Browsable(False)>
+    Public Property GTextShadower() As TextShadower
         Get
             Return _gTextShadower
         End Get
@@ -551,9 +552,9 @@ Public Class gCursor
 
     Private _gTextShadow As Boolean = False
     '
-    <Description("Show or Not Show the Text Shadow")> _
-    <Category("Appearance gCursor Text")> _
-    Public Property gTextShadow() As Boolean
+    <Description("Show or Not Show the Text Shadow")>
+    <Category("Appearance gCursor Text")>
+    Public Property GTextShadow() As Boolean
         Get
             Return _gTextShadow
         End Get
@@ -564,9 +565,9 @@ Public Class gCursor
 
     Private _gTextBoxColor As Color = Color.Blue
     '
-    <Description("Background Color of the Text Box")> _
-    <Category("Appearance gCursor Text")> _
-    Public Property gTextBoxColor() As Color
+    <Description("Background Color of the Text Box")>
+    <Category("Appearance gCursor Text")>
+    Public Property GTextBoxColor() As Color
         Get
             Return _gTextBoxColor
         End Get
@@ -577,9 +578,9 @@ Public Class gCursor
 
     Private _gTextBorderColor As Color = Color.Red
     '
-    <Description("Color of the Border around the Text Box")> _
-    <Category("Appearance gCursor Text")> _
-    Public Property gTextBorderColor() As Color
+    <Description("Color of the Border around the Text Box")>
+    <Category("Appearance gCursor Text")>
+    Public Property GTextBorderColor() As Color
         Get
             Return _gTextBorderColor
         End Get
@@ -590,9 +591,9 @@ Public Class gCursor
 
     Private _gTextAlignment As ContentAlignment = ContentAlignment.TopCenter
     '
-    <Description("Horizontal Text Alignment in the Text Box")> _
-    <Category("Appearance gCursor Text")> _
-    Public Property gTextAlignment() As ContentAlignment
+    <Description("Horizontal Text Alignment in the Text Box")>
+    <Category("Appearance gCursor Text")>
+    Public Property GTextAlignment() As ContentAlignment
         Get
             Return _gTextAlignment
         End Get
@@ -617,29 +618,29 @@ Public Class gCursor
         End Set
     End Property
 
-    Enum eTextFade
+    Enum ETextFade
         Solid
         Linear
         Path
     End Enum
-    Private _gTextFade As eTextFade = eTextFade.Solid
+    Private _gTextFade As ETextFade = ETextFade.Solid
     '
-    <Description("Brush type to fade Text")> _
-    <Category("Appearance gCursor Text")> _
-    Public Property gTextFade() As eTextFade
+    <Description("Brush type to fade Text")>
+    <Category("Appearance gCursor Text")>
+    Public Property GTextFade() As ETextFade
         Get
             Return _gTextFade
         End Get
-        Set(ByVal Value As eTextFade)
+        Set(ByVal Value As ETextFade)
             _gTextFade = Value
         End Set
     End Property
 
-    Private _gFont As Font = New Font("Arial", 10, FontStyle.Bold)
+    Private _gFont As New Font("Arial", 10, FontStyle.Bold)
     '
-    <Description("Font for the Text")> _
-    <Category("Appearance gCursor Text")> _
-    Public Property gFont() As Font
+    <Description("Font for the Text")>
+    <Category("Appearance gCursor Text")>
+    Public Property GFont() As Font
         Get
             Return _gFont
         End Get
@@ -665,15 +666,15 @@ Public Class gCursor
         Dim cWidth As Integer
         Dim cHeight As Integer
         Select Case _gType
-            Case eType.Picture
+            Case EType.Picture
                 cWidth = CInt(_gImageBox.Width + 5)
                 cHeight = CInt(_gImageBox.Height + 5)
 
-            Case eType.Text
+            Case EType.Text
                 cWidth = CInt(_gTextBoxArea.Width + 6)
                 cHeight = CInt(_gTextBoxArea.Height + 6)
 
-            Case eType.Both
+            Case EType.Both
                 cWidth = CInt(_gImageBox.Width + _gTextBoxArea.Width + 16)
                 cHeight = CInt(Math.Max(_gImageBox.Height + 6, _gTextBoxArea.Height + 6))
 
@@ -683,11 +684,11 @@ Public Class gCursor
         SetHotSpot(cWidth, cHeight)
 
         'Draw the gCursor
-        Dim bm As Bitmap = New Bitmap(cWidth + 32, cHeight + 32, PixelFormat.Format32bppArgb)
+        Dim bm As New Bitmap(cWidth + 32, cHeight + 32, PixelFormat.Format32bppArgb)
         Using g As Graphics = Graphics.FromImage(bm)
 
             Select Case _gType
-                Case eType.Picture
+                Case EType.Picture
 
                     'Draw the Image Box Shadow 
                     If _gBoxShadow And _gShowImageBox Then AddShadow(g, New Point(0, 0), New Size(cWidth, cHeight), False)
@@ -695,7 +696,7 @@ Public Class gCursor
                     'Draw the Picture
                     DrawImage(g, CInt(_gImageBox.Width), CInt(_gImageBox.Height))
 
-                Case eType.Text
+                Case EType.Text
 
                     'Draw the Text Box
                     If _gShowTextBox Then
@@ -710,7 +711,7 @@ Public Class gCursor
                     'Draw the Text String
                     DrawText(g)
 
-                Case eType.Both
+                Case EType.Both
 
                     'Draw the Image Box Shadow 
                     If _gBoxShadow And _gShowImageBox Then
@@ -741,41 +742,41 @@ Public Class gCursor
             'Add the image of the Effect Cursor to the gCursor Image
             If addEffect Then
                 Dim EffectCursor As Cursor = Cursors.Default
-                Select Case gScrolling
-                    Case eScrolling.No
+                Select Case GScrolling
+                    Case EScrolling.No
                         Select Case _gEffect
-                            Case eEffect.No
+                            Case EEffect.No
                                 EffectCursor = CurNo
-                            Case eEffect.Move
+                            Case EEffect.Move
                                 EffectCursor = CurMove
-                            Case eEffect.Copy
+                            Case EEffect.Copy
                                 EffectCursor = CurCopy
                         End Select
-                    Case eScrolling.ScrollDn
+                    Case EScrolling.ScrollDn
                         EffectCursor = Cursors.PanSouth
-                    Case eScrolling.ScrollUp
+                    Case EScrolling.ScrollUp
                         EffectCursor = Cursors.PanNorth
-                    Case eScrolling.ScrollLeft
+                    Case EScrolling.ScrollLeft
                         EffectCursor = Cursors.PanWest
-                    Case eScrolling.ScrollRight
+                    Case EScrolling.ScrollRight
                         EffectCursor = Cursors.PanEast
 
                 End Select
 
-                EffectCursor.Draw(g, New Rectangle(_gHotSpotPt.X, _gHotSpotPt.Y, _
+                EffectCursor.Draw(g, New Rectangle(_gHotSpotPt.X, _gHotSpotPt.Y,
                     EffectCursor.Size.Width, EffectCursor.Size.Height))
 
             End If
 
             'Create the New Cursor
-            gCursor = CreateCursor(bm)
+            GCursor = CreateCursor(bm)
         End Using
 
         bm.Dispose()
     End Sub
 
     Private Sub SetTextBox()
-        Dim bm As Bitmap = New Bitmap(1000, 1000)
+        Dim bm As New Bitmap(1000, 1000)
         sf.Trimming = StringTrimming.EllipsisCharacter
         If Not _gTextMultiline Then
             sf.FormatFlags = StringFormatFlags.NoWrap
@@ -787,22 +788,22 @@ Public Class gCursor
         Using g As Graphics = Graphics.FromImage(bm)
             Dim gHeight As Integer
             If _gTextMultiline Then
-                If _gTextAutoFit = eTextAutoFit.Height Then
-                    gHeight = CInt(g.MeasureString(_gText, gFont, CInt(_gTextBox.Width)).Height)
+                If _gTextAutoFit = ETextAutoFit.Height Then
+                    gHeight = CInt(g.MeasureString(_gText, GFont, CInt(_gTextBox.Width)).Height)
                 Else
-                    gHeight = CInt(g.MeasureString(_gText, gFont).Height)
+                    gHeight = CInt(g.MeasureString(_gText, GFont).Height)
                 End If
             Else
-                gHeight = gFont.Height
+                gHeight = GFont.Height
             End If
             Select Case _gTextAutoFit
-                Case eTextAutoFit.Height
+                Case ETextAutoFit.Height
                     _gTextBoxArea = New Size(_gTextBox.Width, gHeight)
-                Case eTextAutoFit.Width
-                    _gTextBoxArea = New Size(CInt(g.MeasureString(_gText, gFont).Width + 1), _gTextBox.Height)
-                Case eTextAutoFit.All
-                    _gTextBoxArea = New Size(CInt(g.MeasureString(_gText, gFont).Width + 1), gHeight)
-                Case eTextAutoFit.None
+                Case ETextAutoFit.Width
+                    _gTextBoxArea = New Size(CInt(g.MeasureString(_gText, GFont).Width + 1), _gTextBox.Height)
+                Case ETextAutoFit.All
+                    _gTextBoxArea = New Size(CInt(g.MeasureString(_gText, GFont).Width + 1), gHeight)
+                Case ETextAutoFit.None
                     _gTextBoxArea = New Size(_gTextBox.Width, _gTextBox.Height)
             End Select
 
@@ -850,21 +851,22 @@ Public Class gCursor
     Private Function ImageTransp() As Bitmap
 
         'Use a ColorMatrix to create a Transparent Image
-        Dim bm As Bitmap = New Bitmap(_gImage.Width, _gImage.Height)
-        Dim ia As ImageAttributes = New ImageAttributes()
-        Dim cm As ColorMatrix = New ColorMatrix
-        cm.Matrix33 = CSng(_gImageTransp / 255)
+        Dim bm As New Bitmap(_gImage.Width, _gImage.Height)
+        Dim ia As New ImageAttributes()
+        Dim cm As New ColorMatrix With {
+            .Matrix33 = CSng(_gImageTransp / 255)
+        }
         ia.SetColorMatrix(cm)
         Using g As Graphics = Graphics.FromImage(bm)
-            g.DrawImage(_gImage, _
-              New Rectangle(0, 0, _gImage.Width, _gImage.Height), 0, 0, _
+            g.DrawImage(_gImage,
+              New Rectangle(0, 0, _gImage.Width, _gImage.Height), 0, 0,
               _gImage.Width, _gImage.Height, GraphicsUnit.Pixel, ia)
         End Using
         Return bm
 
     End Function
 
-    Private Sub DrawImage(ByRef g As Graphics, ByVal cWidth As Integer, ByVal cHeight As Integer, Optional ByVal ptX As Integer = 0, Optional ByVal ptY As Integer = 0)
+    Private Sub DrawImage(ByRef g As Graphics, ByVal cWidth As Integer, ByVal cHeight As Integer)
         If _gShowImageBox Then
             g.FillRectangle(New SolidBrush(Color.FromArgb(_gImageBoxTransp, _gImageBoxColor)), 0, 0, cWidth + 4, cHeight + 4)
         End If
@@ -876,11 +878,11 @@ Public Class gCursor
 
     Private Sub DrawTextBox(ByRef g As Graphics, Optional ByVal ptX As Integer = 0, Optional ByVal ptY As Integer = 0)
 
-        Using pn As Pen = New Pen(_gTextBorderColor)
+        Using pn As New Pen(_gTextBorderColor)
             pn.Alignment = PenAlignment.Inset
-            g.FillRectangle(New SolidBrush(Color.FromArgb(CInt(_gTextBoxTransp), _gTextBoxColor)), _
+            g.FillRectangle(New SolidBrush(Color.FromArgb(CInt(_gTextBoxTransp), _gTextBoxColor)),
                 New Rectangle(ptX, ptY, CInt(_gTextBoxArea.Width + 6), CInt(_gTextBoxArea.Height + 6)))
-            g.DrawRectangle(New Pen(_gTextBorderColor), _
+            g.DrawRectangle(New Pen(_gTextBorderColor),
                 New Rectangle(ptX, ptY, CInt(_gTextBoxArea.Width + 6), CInt(_gTextBoxArea.Height + 6)))
         End Using
     End Sub
@@ -890,17 +892,17 @@ Public Class gCursor
         'Setup Text Brushes
         Dim br As Brush = New SolidBrush(Color.FromArgb(CInt(_gTextTransp), _gTextColor))
         Dim brs As Brush = New SolidBrush(Color.FromArgb(_gTextShadower.ShadowTransp, _gTextShadowColor))
-        If _gTextFade = eTextFade.Linear Then
-            br = New LinearGradientBrush( _
-                New Rectangle(ptX + 3, ptY + 3, CInt(_gTextBoxArea.Width), CInt(_gTextBoxArea.Height + 3)), _
+        If _gTextFade = ETextFade.Linear Then
+            br = New LinearGradientBrush(
+                New Rectangle(ptX + 3, ptY + 3, CInt(_gTextBoxArea.Width), CInt(_gTextBoxArea.Height + 3)),
                 _gTextColor, Color.Transparent, LinearGradientMode.Horizontal)
-            brs = New LinearGradientBrush( _
-               New Rectangle(0, 0, CInt(_gTextBoxArea.Width), CInt(_gTextBoxArea.Height + 3)), _
-               Color.FromArgb(_gTextShadower.ShadowTransp, _gTextShadowColor), _
+            brs = New LinearGradientBrush(
+               New Rectangle(0, 0, CInt(_gTextBoxArea.Width), CInt(_gTextBoxArea.Height + 3)),
+               Color.FromArgb(_gTextShadower.ShadowTransp, _gTextShadowColor),
                 Color.Transparent, LinearGradientMode.Horizontal)
 
-        ElseIf _gTextFade = eTextFade.Path Then
-            Dim gp As GraphicsPath = New GraphicsPath
+        ElseIf _gTextFade = ETextFade.Path Then
+            Dim gp As New GraphicsPath
             gp.AddRectangle(New Rectangle(ptX + 3, ptY + 3, CInt(_gTextBoxArea.Width), CInt(_gTextBoxArea.Height + 3)))
             br = New PathGradientBrush(gp)
             CType(br, PathGradientBrush).CenterColor = _gTextColor
@@ -926,7 +928,7 @@ Public Class gCursor
 
         Else
             g.TextRenderingHint = TextRenderingHint.AntiAlias
-            g.DrawString(_gText, _gFont, br, _
+            g.DrawString(_gText, _gFont, br,
                 New Rectangle(ptX + 3, ptY + 3, CInt(_gTextBoxArea.Width), CInt(_gTextBoxArea.Height + 3)), sf)
         End If
 
@@ -936,7 +938,7 @@ Public Class gCursor
 
     Private Sub AddShadow(ByRef g As Graphics, ByVal ShadowPt As Point, ByVal BoxToShadow As Size, Optional ByVal UseTextBuffer As Boolean = True)
         Dim br As LinearGradientBrush
-        Dim gp As GraphicsPath = New GraphicsPath
+        Dim gp As New GraphicsPath
         Dim pts() As Point
         Dim shadowsz As Size
         If UseTextBuffer Then
@@ -945,25 +947,25 @@ Public Class gCursor
             shadowsz = BoxToShadow
         End If
         Dim ShadowColor As Color = Color.Black
-        pts = New Point() { _
-            New Point(ShadowPt.X + shadowsz.Width, ShadowPt.Y + 5), _
-            New Point(ShadowPt.X + shadowsz.Width + 5, ShadowPt.Y + 5), _
-            New Point(ShadowPt.X + shadowsz.Width + 5, ShadowPt.Y + shadowsz.Height + 5), _
+        pts = New Point() {
+            New Point(ShadowPt.X + shadowsz.Width, ShadowPt.Y + 5),
+            New Point(ShadowPt.X + shadowsz.Width + 5, ShadowPt.Y + 5),
+            New Point(ShadowPt.X + shadowsz.Width + 5, ShadowPt.Y + shadowsz.Height + 5),
             New Point(ShadowPt.X + shadowsz.Width, ShadowPt.Y + shadowsz.Height)}
         gp.AddLines(pts)
-        br = New LinearGradientBrush(New RectangleF((ShadowPt.X + shadowsz.Width - 1), (ShadowPt.Y + 5), _
-            6, (shadowsz.Height)), _
+        br = New LinearGradientBrush(New RectangleF((ShadowPt.X + shadowsz.Width - 1), (ShadowPt.Y + 5),
+            6, (shadowsz.Height)),
               ShadowColor, Color.Transparent, LinearGradientMode.Horizontal)
         g.FillPath(br, gp)
         gp.Reset()
-        pts = New Point() { _
-            New Point(ShadowPt.X + 5, ShadowPt.Y + shadowsz.Height), _
-            New Point(ShadowPt.X + shadowsz.Width, ShadowPt.Y + shadowsz.Height), _
-            New Point(ShadowPt.X + shadowsz.Width + 5, ShadowPt.Y + shadowsz.Height + 5), _
+        pts = New Point() {
+            New Point(ShadowPt.X + 5, ShadowPt.Y + shadowsz.Height),
+            New Point(ShadowPt.X + shadowsz.Width, ShadowPt.Y + shadowsz.Height),
+            New Point(ShadowPt.X + shadowsz.Width + 5, ShadowPt.Y + shadowsz.Height + 5),
             New Point(ShadowPt.X + 5, ShadowPt.Y + shadowsz.Height + 5)}
         gp.AddLines(pts)
-        br = New LinearGradientBrush(New RectangleF((ShadowPt.X + 5), (ShadowPt.Y + shadowsz.Height + 5), _
-            (shadowsz.Width), 6), _
+        br = New LinearGradientBrush(New RectangleF((ShadowPt.X + 5), (ShadowPt.Y + shadowsz.Height + 5),
+            (shadowsz.Width), 6),
               ShadowColor, Color.Transparent, LinearGradientMode.Vertical)
         g.FillPath(br, gp)
         br.Dispose()

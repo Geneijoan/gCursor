@@ -15,7 +15,7 @@ Public Class TextShadower
         End Set
     End Property
 
-    Private _Font As Font = New Font("Arial", 10, FontStyle.Bold)
+    Private _Font As New Font("Arial", 10, FontStyle.Bold)
     Public Property Font() As Font
         Get
             Return _Font
@@ -78,7 +78,7 @@ Public Class TextShadower
         End Set
     End Property
 
-    Private _sf As StringFormat = New StringFormat
+    Private ReadOnly _sf As New StringFormat
     Private _Alignment As ContentAlignment = ContentAlignment.MiddleCenter
     Public Property Alignment() As ContentAlignment
         Get
@@ -125,7 +125,7 @@ Public Class TextShadower
         End Set
     End Property
 
-    Private _Offset As PointF = New PointF(3, 3)
+    Private _Offset As New PointF(3, 3)
     Public Property Offset() As PointF
         Get
             Return _Offset
@@ -163,19 +163,17 @@ Public Class TextShadower
     Public Sub ShadowTheText(ByVal g As Graphics, ByVal rect As Rectangle)
 
         'Make a small (Blurred) bitmap
-        Using bm As Bitmap = _
-          New Bitmap(CInt(rect.Width / _Blur), CInt(rect.Height / _Blur))
+        Using bm As New Bitmap(CInt(rect.Width / _Blur), CInt(rect.Height / _Blur))
             'Get a graphics object for it
             Using gBlur As Graphics = Graphics.FromImage(bm)
                 ' must use an antialiased rendering hint
                 gBlur.TextRenderingHint = TextRenderingHint.AntiAlias
                 'this matrix zooms the text and offsets it
-                Dim mx As Matrix = _
-                    New Matrix(1 / _Blur, 0, 0, 1 / _Blur, _Offset.X, _Offset.Y)
+                Dim mx As New Matrix(1 / _Blur, 0, 0, 1 / _Blur, _Offset.X, _Offset.Y)
                 gBlur.Transform = mx
                 'The shadow is drawn
-                gBlur.DrawString(Text, Font, _ShadowBrush, New Rectangle(0, 0, _
-                   CInt(rect.Width - (_Offset.X * _Blur) - _Padding.Horizontal), _
+                gBlur.DrawString(Text, Font, _ShadowBrush, New Rectangle(0, 0,
+                   CInt(rect.Width - (_Offset.X * _Blur) - _Padding.Horizontal),
                    CInt(rect.Height - (_Offset.Y) * _Blur) - _Padding.Vertical), _sf)
             End Using
             rect.Offset(_Padding.Left, _Padding.Top)
